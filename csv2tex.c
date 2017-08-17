@@ -3,6 +3,7 @@
 #include <string.h>
 #include <unistd.h>
 #include "convert.h"
+#include "generate.h"
 #include "help.h"
 
 #define MAX_CHAR 100
@@ -15,6 +16,7 @@ int main(int argc, char **argv){
 	char place[5];
 	char input_file_name[MAX_CHAR];
 	char output_file_name[MAX_CHAR];
+	int col_num;
 
 	opterr = 0;
 	separation = ',';
@@ -63,11 +65,18 @@ int main(int argc, char **argv){
 				exit(1);
 		}
 	}
+
 	if (argc - optind < 1 || argc - optind > 2){
 		printf("引数が不適切\n");
 		error(argv[0]);
 		exit(1);
 	}
+	if (check_format(format)){
+		printf("formatが不適切\n");
+		error(argv[0]);
+		exit(1);
+	}
+
 	printf("arg%d : %s\n", optind, argv[optind]);
 	strcpy(input_file_name, argv[optind]);
 	optind++;
@@ -78,7 +87,16 @@ int main(int argc, char **argv){
 		strcpy(output_file_name, argv[optind]);
 	}
 	printf("%lu %lu %lu %lu\n", strlen(caption), strlen(format), strlen(label), strlen(place));
-	convert(separation, caption, format, label, place, input_file_name, output_file_name);
+
+	if (strcmp(format, "data") != 0){
+		gen_header(caption, label, place, output_file_name);
+	}
+	col_num = get_col_num(separation, input_file_name);
+	printf("col : %d\n", col_num);
+	convert(col_num, separation, format, input_file_name, output_file_name);
+	if (strcmp(format, "data") != 0){
+		gen_footer(output_file_name);
+	}
 	
 	return 0;
 }

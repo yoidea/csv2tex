@@ -47,8 +47,7 @@ csv2tex -p htbp input.csv
 \hline \hline
 A & B & C \\ \hline
 1 & 2 & 3 \\
-4 & 5 & 6 \\
-\hline
+4 & 5 & 6 \\ \hline
 \end{tabular}
 \end{center}
 \end{table}
@@ -65,7 +64,6 @@ A & B & C \\ \hline
 A & B & C \\ \hline
 1 & 2 & 3 \\ \hline
 4 & 5 & 6 \\ \hline
-\hline
 \end{tabular}
 \end{center}
 \end{table}
