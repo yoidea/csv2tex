@@ -91,9 +91,9 @@ int main(int argc, char **argv){
 	if (strcmp(format, "data") != 0){
 		gen_header(caption, label, place, fo);
 	}
-	// カラム数を取得
+	// カラム数を取得する
 	col_num = get_col_num(separation, fi);
-	// csvを変換
+	// csvを変換する
 	convert(col_num, separation, format, fi, fo);
 	// フォーマットがdataならフッタを出力しない
 	if (strcmp(format, "data") != 0){
