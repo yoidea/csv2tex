@@ -1,3 +1,4 @@
+// フォーマットが存在するか確認する
 int check_format(char *format){
 	if (strcmp(format, "thesis") == 0){
 		return 0;
@@ -8,49 +9,35 @@ int check_format(char *format){
 	} else if (strcmp(format, "data") == 0){
 		return 0;
 	}
-
+	// すべて該当しなければtrue
 	return 1;
 }
 
-int get_col_num(char separation, char *input_file_name){
-	FILE *fp;
+// カラム数を取得する
+int get_col_num(char separation, FILE *fp){
 	char c;
 	int col_num;
-
-	if ((fp = fopen(input_file_name, "r")) == NULL){
-		printf("ファイルオープン失敗\n");
-		exit(1);
-	}
-
 	col_num = 0;
 	for (;;){
 		c = fgetc(fp);
+		// 改行が見つかるまで走査
 		if (c == EOF || c == '\n') break;
+		// 区切りをカウント
 		if (c == separation){
 			col_num++;
 		}
 	}
-
-	fclose(fp);
-
+	fseek(fp, 0, SEEK_SET);
+	// 0からカウントしているため+1
 	return col_num + 1;
 }
 
-void convert(int col_num, char separation, char *format, char *input_file_name, char *output_file_name){
-	FILE *fi, *fo;
+// csvからtexテーブルに変換する
+void convert(int col_num, char separation, char *format, FILE *fi, FILE *fo){
 	char c;
 	int i;
-
-	if ((fi = fopen(input_file_name, "r")) == NULL){
-		printf("ファイルオープン失敗\n");
-		exit(1);
-	}
-	if ((fo = fopen(output_file_name, "a")) == NULL){
-		printf("ファイル作成失敗\n");
-		exit(1);
-	}
-
 	fprintf(fo, "\\begin{tabular}{");
+	// フォーマットに合わせて出力
 	if (strcmp(format, "grid") == 0){
 		fputc('|', fo);
 	}
@@ -67,13 +54,12 @@ void convert(int col_num, char separation, char *format, char *input_file_name, 
 		fputc('|', fo);
 	}
 	fprintf(fo, "}\n");
-
 	if (strcmp(format, "thesis") == 0){
 		fprintf(fo, "\\hline \\hline\n");
 	} else if (strcmp(format, "grid") == 0){
 		fprintf(fo, "\\hline\n");
 	}
-
+	// 1行目を変換
 	for (;;){
 		c = fgetc(fi);
 		if (c == EOF || c == '\n') break;
@@ -90,7 +76,7 @@ void convert(int col_num, char separation, char *format, char *input_file_name, 
 	} else {
 		fprintf(fo, " \\\\\n");
 	}
-
+	// 残りの行を変換
 	for (;;){
 		c = fgetc(fi);
 		if (c == EOF) break;
@@ -111,9 +97,5 @@ void convert(int col_num, char separation, char *format, char *input_file_name, 
 	} else {
 		fprintf(fo, " \\\\\n");
 	}
-
 	fprintf(fo, "\\end{tabular}\n");
-
-	fclose(fi);
-	fclose(fo);
 }

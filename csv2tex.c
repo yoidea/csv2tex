@@ -6,7 +6,7 @@
 #include "generate.h"
 #include "help.h"
 
-#define MAX_CHAR 100
+#define MAX_CHAR 100 // 最大文字列長
 
 int main(int argc, char **argv){
 	char option, separation;
@@ -17,7 +17,8 @@ int main(int argc, char **argv){
 	char input_file_name[MAX_CHAR];
 	char output_file_name[MAX_CHAR];
 	int col_num;
-
+	FILE *fi, *fo;
+	// 初期化、初期値代入
 	opterr = 0;
 	separation = ',';
 	strcpy(caption, "");
@@ -25,78 +26,80 @@ int main(int argc, char **argv){
 	strcpy(label, "");
 	strcpy(place, "h");
 	strcpy(output_file_name, "output.txt");
-
+	// オプション、引数取得
 	while ((option = getopt(argc, argv, "CSThc:f:l:p:")) != -1){
 		switch (option){
 			case 'C':
-				printf("カンマ区切り\n");
 				separation = ',';
 				break;
 			case 'S':
-				printf("スペース区切り\n");
 				separation = ' ';
 				break;
 			case 'T':
-				printf("タブ区切り\n");
 				separation = '\t';
 				break;
 			case 'c':
-				printf("Caption : %s\n", optarg);
 				strcpy(caption, optarg);
 				break;
 			case 'f':
-				printf("Format : %s\n", optarg);
 				strcpy(format, optarg);
 				break;
 			case 'h':
 				help(argv[0]);
 				return 0;
 			case 'l':
-				printf("Label : %s\n", optarg);
 				strcpy(label, optarg);
 				break;
 			case 'p':
-				printf("Place : %s\n", optarg);
 				strcpy(place, optarg);
 				break;
 			default:
-				printf("オプションが不適切\n");
+				printf("オプションエラー\n");
 				error(argv[0]);
 				exit(1);
 		}
 	}
-
+	// 引数チェック
 	if (argc - optind < 1 || argc - optind > 2){
-		printf("引数が不適切\n");
 		error(argv[0]);
 		exit(1);
 	}
 	if (check_format(format)){
-		printf("formatが不適切\n");
+		printf("フォーマット\"%s\"は存在しません\n", format);
 		error(argv[0]);
 		exit(1);
 	}
-
-	printf("arg%d : %s\n", optind, argv[optind]);
+	// ファイル名を取得
 	strcpy(input_file_name, argv[optind]);
 	optind++;
 	if (optind > argc - 1){
-		printf("output指定なし\n");
+		// 出力先指定がなければoutput.txtとする
+		strcpy(output_file_name, "output.txt");
 	} else {
-		printf("arg%d : %s\n", optind, argv[optind]);
 		strcpy(output_file_name, argv[optind]);
 	}
-	printf("%lu %lu %lu %lu\n", strlen(caption), strlen(format), strlen(label), strlen(place));
-
-	if (strcmp(format, "data") != 0){
-		gen_header(caption, label, place, output_file_name);
+	// ファイルチェック
+	if ((fi = fopen(input_file_name, "r")) == NULL){
+		printf("%sを開けません\n", input_file_name);
+		exit(1);
 	}
-	col_num = get_col_num(separation, input_file_name);
-	printf("col : %d\n", col_num);
-	convert(col_num, separation, format, input_file_name, output_file_name);
-	if (strcmp(format, "data") != 0){
-		gen_footer(output_file_name);
+	if ((fo = fopen(output_file_name, "w")) == NULL){
+		printf("%sを作成できません\n", output_file_name);
+		exit(1);
 	}
-	
+	// フォーマットがdataならヘッダを出力しない
+	if (strcmp(format, "data") != 0){
+		gen_header(caption, label, place, fo);
+	}
+	// カラム数を取得
+	col_num = get_col_num(separation, fi);
+	// csvを変換
+	convert(col_num, separation, format, fi, fo);
+	// フォーマットがdataならフッタを出力しない
+	if (strcmp(format, "data") != 0){
+		gen_footer(fo);
+	}
+	fclose(fi);
+	fclose(fo);
 	return 0;
 }

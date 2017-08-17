@@ -1,8 +1,10 @@
+// 簡単な使用法を表示する
 void error(char *name){
 	printf("使用法: %s [-C | -T | -S] [[-c | -l | -f | -p] argment] source_file target_file\n", name);
-	printf("詳細な使用法は\"%s -h\"とタイプしてください\n", name);
+	printf("詳細な使用法は\"%s -h\"と入力してください\n", name);
 }
 
+// 詳細な使用法を表示する
 void help(char *name){
 	printf("使用法: %s [-C | -T | -S] [[-c | -l | -f | -p] argment] source_file target_file\n", name);
 	printf("  -C         : カンマ区切りデータ\n");
