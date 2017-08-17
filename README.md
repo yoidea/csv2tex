@@ -1,92 +1,192 @@
 # csv2tex
-A CLI tool that convert csv files to tex table, and insert in tex files
+CSV形式のファイルからTeXテーブルを作成するコマンドラインツール。
 
-## Demo
-input.csv -> output.txt
+## 動作環境
+C言語がコンパイルできる環境。
+- stdio.h
+- stdlib.h
+- string.h
+- unistd.h
+
+## デモと使用法
+input.csv
+```csv
+AAA,BBB,CCC
+111,222,333
+444,555,666
+777,888,999
+```
+
+### 変換元ファイルだけ指定
 ```bash
 csv2tex input.csv
 ```
 
-input.csv -> output2.txt
+output.txt
+```latex
+\begin{table}[h]
+\begin{center}
+\begin{tabular}{l|l|l}
+\hline \hline
+AAA & BBB & CCC \\ \hline
+111 & 222 & 333 \\
+444 & 555 & 666 \\
+777 & 888 & 999 \\ \hline
+\end{tabular}
+\end{center}
+\end{table}
+```
+
+### 変換先ファイル名も指定
 ```bash
 csv2tex input.csv output2.txt
 ```
 
-Use tab for separation
-```bash
-csv2tex -T input.csv output.txt
+output2.txt
+```latex
+\begin{table}[h]
+\begin{center}
+\begin{tabular}{l|l|l}
+\hline \hline
+AAA & BBB & CCC \\ \hline
+111 & 222 & 333 \\
+444 & 555 & 666 \\
+777 & 888 & 999 \\ \hline
+\end{tabular}
+\end{center}
+\end{table}
 ```
 
-Add a label
+### ラベル、キャプションを追加
 ```bash
-csv2tex -l label input.csv
+csv2tex -c test -l table:test input.csv
 ```
 
-Add a caption
-```bash
-csv2tex -c caption input.csv
+output.txt
+```latex
+\begin{table}[h]
+\caption{test}
+\label{table:test}
+\begin{center}
+\begin{tabular}{l|l|l}
+\hline \hline
+AAA & BBB & CCC \\ \hline
+111 & 222 & 333 \\
+444 & 555 & 666 \\
+777 & 888 & 999 \\ \hline
+\end{tabular}
+\end{center}
+\end{table}
 ```
 
-Select a format
-```bash
-csv2tex -f format input.csv
-```
-
-Select a place
+### 配置場所を指定
 ```bash
 csv2tex -p htbp input.csv
 ```
 
-`-f thesis`
+output.txt
 ```latex
-\begin{table}[h]
-\caption{caption}
-\label{label}
+\begin{table}[htbp]
 \begin{center}
 \begin{tabular}{l|l|l}
 \hline \hline
-A & B & C \\ \hline
-1 & 2 & 3 \\
-4 & 5 & 6 \\ \hline
+AAA & BBB & CCC \\ \hline
+111 & 222 & 333 \\
+444 & 555 & 666 \\
+777 & 888 & 999 \\ \hline
 \end{tabular}
 \end{center}
 \end{table}
 ```
 
-`-f grid`
+### フォーマットを指定
+```bash
+csv2tex -f grid input.csv
+```
+
+output.txt
 ```latex
 \begin{table}[h]
-\caption{caption}
-\label{label}
 \begin{center}
 \begin{tabular}{|l|l|l|}
 \hline
-A & B & C \\ \hline
-1 & 2 & 3 \\ \hline
-4 & 5 & 6 \\ \hline
+AAA & BBB & CCC \\ \hline
+111 & 222 & 333 \\ \hline
+444 & 555 & 666 \\ \hline
+777 & 888 & 999 \\ \hline
 \end{tabular}
 \end{center}
 \end{table}
 ```
 
-`-f none`
+```bash
+csv2tex -f none input.txt
+```
+
+output.txt
 ```latex
 \begin{table}[h]
-\caption{caption}
-\label{label}
 \begin{center}
 \begin{tabular}{lll}
-A & B & C \\
-1 & 2 & 3 \\
-4 & 5 & 6 \\
+AAA & BBB & CCC \\
+111 & 222 & 333 \\
+444 & 555 & 666 \\
+777 & 888 & 999 \\
 \end{tabular}
 \end{center}
 \end{table}
 ```
 
-`-f data`
+### 区切りにカンマ以外を使用
+input2.csv
+```csv
+AAA	BBB	CCC
+111	222	333
+444	555	666
+777	888	999
+```
+
+input3.csv
+```csv
+AAA BBB CCC
+111 222 333
+444 555 666
+777 888 999
+```
+
+```bash
+csv2tex -T input2.csv
+```
+
+```bash
+csv2tex -S input3.csv
+```
+
+output.txt
 ```latex
-A & B & C \\
-1 & 2 & 3 \\
-4 & 5 & 6 \\
+\begin{table}[h]
+\begin{center}
+\begin{tabular}{l|l|l}
+\hline \hline
+AAA & BBB & CCC \\ \hline
+111 & 222 & 333 \\
+444 & 555 & 666 \\
+777 & 888 & 999 \\ \hline
+\end{tabular}
+\end{center}
+\end{table}
+```
+
+## インストール
+`csv2tex.c`をコンパイルして、そのまま実行する、もしくはパスを通して実行する。
+
+（例）
+```bash
+gcc csv2tex.c
+./a.out -T -f grid input.csv
+```
+
+```bash
+gcc -o csv2tex csv2tex.c
+./csv2tex -T -f grid input.csv
 ```
