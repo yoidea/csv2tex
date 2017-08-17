@@ -18,8 +18,10 @@ int main(int argc, char **argv){
 
 	opterr = 0;
 	separation = ',';
-	strcpy(place, "h");
+	strcpy(caption, "");
 	strcpy(format, "thesis");
+	strcpy(label, "");
+	strcpy(place, "h");
 	strcpy(output_file_name, "output.txt");
 
 	while ((option = getopt(argc, argv, "CSThc:f:l:p:")) != -1){
@@ -73,8 +75,9 @@ int main(int argc, char **argv){
 		printf("output指定なし\n");
 	} else {
 		printf("arg%d : %s\n", optind, argv[optind]);
-		strcpy(input_file_name, argv[optind]);
+		strcpy(output_file_name, argv[optind]);
 	}
+	printf("%lu %lu %lu %lu\n", strlen(caption), strlen(format), strlen(label), strlen(place));
 	convert(separation, caption, format, label, place, input_file_name, output_file_name);
 	
 	return 0;
