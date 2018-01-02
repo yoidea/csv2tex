@@ -178,15 +178,33 @@ AAA & BBB & CCC \\ \hline
 ```
 
 ## インストール
-`csv2tex.c`をコンパイルして、そのまま実行する、もしくはパスを通して実行する。
+`homebrew`を利用する。または、`make`を行う。もしくは`csv2tex.c`をコンパイルして実行する。
 
-（例）
+### homebrew (Mac only)
 ```bash
-gcc csv2tex.c
-./a.out -T -f grid input.csv
+# install
+brew tap yoidea/csv2tex
+brew install csv2tex
+# run
+csv2tex -T -f grid input.csv
 ```
 
+### make
 ```bash
-gcc -o csv2tex csv2tex.c
+# install
+git clone https://github.com/yoidea/csv2tex.git
+cd csv2tex/
+make
+# run
 ./csv2tex -T -f grid input.csv
+```
+
+### compile
+```bash
+# install
+git clone https://github.com/yoidea/csv2tex.git
+cd csv2tex/
+gcc -o csv2tex csv2tex.c
+# run
+./csv2tex  -T -f grid input.csv
 ```
